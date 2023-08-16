@@ -15,8 +15,22 @@ class DatabaseHelper:
             )''')
 
     def insert_weather_data(self, city, temperature, feels_like):
-        pass
+        with self.conn:
+            self.conn.execute('''
+                INSERT OR REPLACE INTO weather_data (city, temperature, feels_like)
+                VALUES (?, ?, ?)
+            ''', (city, temperature, feels_like))
 
     def get_weather_data(self, city):
-        pass
+        cursor = self.conn.execute('''
+                SELECT temperature, feels_like
+                FROM weather_data
+                WHERE city = ?
+            ''', (city,))
+        row = cursor.fetchone()
+        if row:
+            temperature, feels_like = row
+            return temperature, feels_like
+        else:
+            return None
 
